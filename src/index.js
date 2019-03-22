@@ -1,24 +1,36 @@
 const { GraphQLServer } = require("graphql-yoga");
 
-//1
-const typeDefs = `
-type Query {
-    info : String!
-}
-`;
-
-//2
+let links = [
+  {
+    id: "link-0",
+    url: "www.howtographql.com",
+    description: "Fullstack tutorial for GraphQL"
+  }
+];
+let idCount = links.length;
 const resolvers = {
   Query: {
-    info: () => `This is the API of a Hackernews Clone`
+    info: () => `This is the API of a Hackernews Clone`,
+    feed: () => links
+  },
+
+  Mutation: {
+    post: (parent, args) => {
+      const link = {
+        id: `link-${idCount++}`,
+        description: args.description,
+        url: args.url
+      };
+      links.push(link);
+      return link;
+    }
   }
 };
 
-//3
 const server = new GraphQLServer({
-  typeDefs,
+  typeDefs: "./src/schema.graphql",
   resolvers
 });
 server.start(() =>
-  console.log(`Server is doing backflips and shit on http://localhost:4000`)
+  console.log(`The server is blasting off again on http://localhost:4000`)
 );
